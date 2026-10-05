@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StudyDesk</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>StudyDesk</h1>
+    <p class="tagline">Tumhara student life manager</p>
+    <div id="userBar" style="display:none">
+      <span id="whoami"></span>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </header>
+
+  <!-- Login / Register -->
+  <div id="authBox">
+    <h2>Login ya Register</h2>
+    <input type="text" id="authUser" placeholder="Username">
+    <input type="password" id="authPass" placeholder="Password (kam az kam 6 harf)">
+    <div class="add-row">
+      <button id="loginBtn">Login</button>
+      <button id="registerBtn" class="secondary">Register</button>
+    </div>
+    <p id="authError" class="error"></p>
+  </div>
+
+  <!-- Poori app (login ke baad nazar aayegi) -->
+  <div id="app" style="display:none">
+    <nav>
+      <button class="tab active" data-section="tasks">Tasks</button>
+      <button class="tab" data-section="expenses">Expenses</button>
+      <button class="tab" data-section="notes">Notes</button>
+    </nav>
+
+    <main>
+      <!-- Tasks -->
+      <section id="tasks" class="section active">
+        <h2>Tasks</h2>
+        <div class="add-row">
+          <input type="text" id="taskInput" placeholder="Naya task likho">
+          <button id="addBtn">Add</button>
+        </div>
+        <ul id="taskList"></ul>
+      </section>
+
+      <!-- Expenses -->
+      <section id="expenses" class="section">
+        <h2>Expenses</h2>
+
+        <div class="add-row">
+          <input type="text" id="expTitle" placeholder="Kis cheez par kharcha?">
+          <input type="number" id="expAmount" placeholder="Raqam" min="0">
+          <select id="expCategory">
+            <option>Food</option>
+            <option>Transport</option>
+            <option>Study</option>
+            <option>Other</option>
+          </select>
+          <button id="expAddBtn">Add</button>
+        </div>
+
+        <h3>Total: Rs <span id="expTotal">0</span></h3>
+        <ul id="expList"></ul>
+      </section>
+
+      <!-- Notes -->
+      <section id="notes" class="section">
+        <h2>Notes</h2>
+
+        <div class="note-form">
+          <input type="text" id="noteTitle" placeholder="Note ka title">
+          <textarea id="noteContent" placeholder="Note likho..." rows="4"></textarea>
+          <div class="add-row">
+            <button id="noteSaveBtn">Save</button>
+            <button id="noteCancelBtn" style="display:none">Cancel</button>
+          </div>
+        </div>
+
+        <input type="text" id="noteSearch" class="search-box" placeholder="Notes mein search karo...">
+        <div id="noteList"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f4f6f8;
+}
+
+header {
+  background: #2d6cdf;
+  color: white;
+  padding: 16px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0;
+}
+
+.tagline {
+  margin: 4px 0 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+nav {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background: white;
+}
+
+.tab {
+  padding: 8px 16px;
+  border: none;
+  background: #e5e9f0;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.tab.active {
+  background: #2d6cdf;
+  color: white;
+}
+
+main {
+  padding: 16px;
+}
+
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+}
+
+/* Tasks */
+.add-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.add-row input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.add-row button {
+  padding: 8px 16px;
+  border: none;
+  background: #2d6cdf;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#taskList {
+  list-style: none;
+  padding: 0;
+}
+
+#taskList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+}
+
+#taskList span {
+  cursor: pointer;
+}
+
+#taskList li button {
+  border: none;
+  background: #e74c3c;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.done {
+  text-decoration: line-through;
+  color: gray;
+}
+/* Expenses */
+.add-row select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+#expList {
+  list-style: none;
+  padding: 0;
+}
+
+#expList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+}
+
+#expList li button {
+  border: none;
+  background: #e74c3c;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+/* Login / Register */
+#authBox {
+  max-width: 320px;
+  margin: 40px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#authBox h2 {
+  margin: 0 0 6px;
+  text-align: center;
+}
+
+#authBox input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+#authBox button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: #2d6cdf;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#authBox button.secondary {
+  background: #888;
+}
+
+.error {
+  color: #e74c3c;
+  margin: 0;
+  min-height: 18px;
+  font-size: 14px;
+}
+
+#userBar {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+#logoutBtn {
+  border: none;
+  background: white;
+  color: #2d6cdf;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
