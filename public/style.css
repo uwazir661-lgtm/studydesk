@@ -1,48 +1,128 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #f4f6f8;
+/* ---------- Rang aur basic settings (Dark theme) ---------- */
+:root {
+  --primary: #8b5cf6;
+  --primary-dark: #7c3aed;
+  --accent: #06b6d4;
+  --bg: #0b1120;
+  --card: #1a2338;
+  --card-2: #243049;
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --border: #334155;
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.15);
+  --success: #34d399;
+  --radius: 22px;
+  --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  --shadow-hover: 0 10px 28px rgba(139, 92, 246, 0.35);
 }
 
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+  margin: 0;
+  background: radial-gradient(circle at top, #1a1f3d 0%, #0b1120 55%);
+  background-attachment: fixed;
+  color: var(--text);
+  min-height: 100vh;
+}
+
+::placeholder {
+  color: var(--muted);
+}
+
+/* ---------- Header ---------- */
 header {
-  background: #2d6cdf;
+  background: linear-gradient(135deg, #6d28d9, #2563eb 60%, #06b6d4);
   color: white;
-  padding: 16px;
+  padding: 32px 16px 56px;
   text-align: center;
+  border-radius: 0 0 40px 40px;
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.35);
 }
 
 header h1 {
   margin: 0;
+  font-size: 34px;
+  letter-spacing: 1px;
 }
 
 .tagline {
-  margin: 4px 0 0;
+  margin: 6px 0 0;
   font-size: 14px;
   opacity: 0.9;
 }
 
+#userBar {
+  margin-top: 14px;
+  font-size: 14px;
+}
+
+#logoutBtn {
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: 0.2s;
+}
+
+#logoutBtn:hover {
+  background: white;
+  color: #4c1d95;
+}
+
+/* ---------- Tabs (tairti hui gol patti) ---------- */
 nav {
   display: flex;
-  gap: 8px;
-  padding: 12px;
-  background: white;
+  justify-content: center;
+  gap: 6px;
+  width: fit-content;
+  max-width: calc(100% - 24px);
+  margin: -28px auto 0;
+  padding: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 10px;
+  z-index: 10;
 }
 
 .tab {
-  padding: 8px 16px;
+  padding: 10px 24px;
   border: none;
-  background: #e5e9f0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 999px;
+  transition: 0.25s;
 }
 
-.tab.active {
-  background: #2d6cdf;
+.tab:hover {
+  background: var(--card-2);
   color: white;
 }
 
+.tab.active {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.5);
+}
+
+/* ---------- Main jagah ---------- */
 main {
-  padding: 16px;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 16px 50px;
 }
 
 .section {
@@ -51,147 +131,309 @@ main {
 
 .section.active {
   display: block;
+  animation: fadeIn 0.35s ease;
 }
 
-/* Tasks */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section h2 {
+  margin: 0 0 16px;
+  font-size: 24px;
+}
+
+/* ---------- Form wali rows ---------- */
 .add-row {
   display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
 }
 
 .add-row input {
   flex: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  min-width: 140px;
 }
 
-.add-row button {
-  padding: 8px 16px;
+input,
+select,
+textarea {
+  padding: 12px 18px;
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  font-size: 15px;
+  font-family: inherit;
+  background: var(--card-2);
+  color: var(--text);
+  transition: 0.2s;
+}
+
+select option {
+  background: var(--card);
+  color: var(--text);
+}
+
+textarea {
+  border-radius: 20px;
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+}
+
+.add-row button,
+.note-form button {
+  padding: 12px 26px;
   border: none;
-  background: #2d6cdf;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   color: white;
-  border-radius: 6px;
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 999px;
   cursor: pointer;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+  transition: 0.2s;
 }
 
-#taskList {
-  list-style: none;
-  padding: 0;
+.add-row button:hover,
+.note-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.55);
 }
 
-#taskList li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  padding: 10px;
-  margin-bottom: 8px;
-  border-radius: 6px;
-}
-
-#taskList span {
-  cursor: pointer;
-}
-
-#taskList li button {
-  border: none;
-  background: #e74c3c;
-  color: white;
-  padding: 6px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.done {
-  text-decoration: line-through;
-  color: gray;
-}
-/* Expenses */
-.add-row select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
+/* ---------- Tasks aur Expenses ki list ---------- */
+#taskList,
 #expList {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
+#taskList li,
 #expList li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
-  padding: 10px;
-  margin-bottom: 8px;
-  border-radius: 6px;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: 0.2s;
 }
 
+#taskList li:hover,
+#expList li:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--primary);
+}
+
+#taskList span {
+  cursor: pointer;
+  flex: 1;
+}
+
+#taskList li button,
 #expList li button {
   border: none;
-  background: #e74c3c;
-  color: white;
-  padding: 6px 10px;
-  border-radius: 6px;
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 999px;
   cursor: pointer;
+  transition: 0.2s;
 }
-/* Login / Register */
-#authBox {
-  max-width: 320px;
-  margin: 40px auto;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
+
+#taskList li button:hover,
+#expList li button:hover {
+  background: var(--danger);
+  color: #1a1a1a;
+}
+
+.done {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+/* ---------- Expenses ka total ---------- */
+#expenses h3 {
+  background: linear-gradient(135deg, #059669, #0891b2);
+  color: white;
+  padding: 16px 22px;
+  border-radius: var(--radius);
+  box-shadow: 0 6px 22px rgba(6, 182, 212, 0.3);
+  margin: 0 0 18px;
+}
+
+/* ---------- Notes ---------- */
+.note-form {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 18px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+}
+
+.note-form .add-row {
+  margin-bottom: 0;
+}
+
+#noteCancelBtn {
+  background: var(--card-2) !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+}
+
+.search-box {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.note-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 18px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+  border-left: 6px solid var(--accent);
+  transition: 0.2s;
+}
+
+.note-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.note-card h4 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.note-card p {
+  margin: 0 0 14px;
+  color: var(--muted);
+  white-space: pre-wrap;
+}
+
+.note-card button {
+  border: none;
+  color: white;
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  margin-right: 8px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.note-card button:hover {
+  transform: translateY(-2px);
+}
+
+.note-edit {
+  background: var(--primary);
+}
+
+.note-del {
+  background: var(--danger);
+  color: #1a1a1a !important;
+}
+
+/* ---------- Login / Register ---------- */
+#authBox {
+  max-width: 380px;
+  margin: -24px auto 40px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 30px 26px;
+  border-radius: 28px;
+  box-shadow: 0 14px 50px rgba(139, 92, 246, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
 }
 
 #authBox h2 {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   text-align: center;
 }
 
-#authBox input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+#authBox .add-row {
+  margin: 0;
 }
 
 #authBox button {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   border: none;
-  background: #2d6cdf;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   color: white;
-  border-radius: 6px;
+  font-weight: 600;
+  font-size: 15px;
+  border-radius: 999px;
   cursor: pointer;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+  transition: 0.2s;
+}
+
+#authBox button:hover {
+  transform: translateY(-2px);
 }
 
 #authBox button.secondary {
-  background: #888;
+  background: var(--card-2);
+  color: var(--text);
+  box-shadow: none;
 }
 
 .error {
-  color: #e74c3c;
+  color: var(--danger);
   margin: 0;
   min-height: 18px;
   font-size: 14px;
+  text-align: center;
 }
 
-#userBar {
-  margin-top: 8px;
-  font-size: 14px;
-}
+/* ---------- Mobile ke liye ---------- */
+@media (max-width: 520px) {
+  header {
+    padding: 26px 12px 50px;
+    border-radius: 0 0 30px 30px;
+  }
 
-#logoutBtn {
-  border: none;
-  background: white;
-  color: #2d6cdf;
-  padding: 4px 10px;
-  border-radius: 6px;
-  cursor: pointer;
+  header h1 {
+    font-size: 28px;
+  }
+
+  .tab {
+    padding: 9px 16px;
+    font-size: 14px;
+  }
+
+  .add-row input {
+    min-width: 100%;
+  }
 }
