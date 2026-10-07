@@ -19,17 +19,78 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === "production";
 const sessionSecret = process.env.SESSION_SECRET;
+const usePostgres = Boolean(process.env.DATABASE_URL);
+let databaseReady = Promise.resolve();
+
+if (process.env.VERCEL && !usePostgres) {
+  throw new Error("DATABASE_URL must be set on Vercel; serverless files are not persistent");
+}
 
 if (isProduction && !sessionSecret) {
   throw new Error("SESSION_SECRET must be set in production");
 }
 
+const postgresPool = usePostgres ? new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_SSL === "false" ? false : { rejectUnauthorized: false },
+  max: process.env.VERCEL ? 3 : 5,
+  idleTimeoutMillis: 30000
+}) : null;
+
+class PostgresSessionStore extends session.Store {
+  constructor(pool) {
+    super();
+    this.pool = pool;
+  }
+
+  get(sid, callback) {
+    this.pool.query(
+      "SELECT sess FROM app_sessions WHERE sid = $1 AND expire > NOW()",
+      [sid]
+    ).then(function (result) {
+      callback(null, result.rows[0] ? result.rows[0].sess : null);
+    }).catch(callback);
+  }
+
+  set(sid, sess, callback) {
+    const expiresAt = sess.cookie && sess.cookie.expires
+      ? new Date(sess.cookie.expires)
+      : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    this.pool.query(
+      `INSERT INTO app_sessions (sid, sess, expire) VALUES ($1, $2::jsonb, $3)
+       ON CONFLICT (sid) DO UPDATE SET sess = EXCLUDED.sess, expire = EXCLUDED.expire`,
+      [sid, JSON.stringify(sess), expiresAt]
+    ).then(function () {
+      callback(null);
+    }).catch(callback);
+  }
+
+  touch(sid, sess, callback) {
+    const expiresAt = sess.cookie && sess.cookie.expires
+      ? new Date(sess.cookie.expires)
+      : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    this.pool.query("UPDATE app_sessions SET expire = $2 WHERE sid = $1", [sid, expiresAt])
+      .then(function () { callback(null); })
+      .catch(callback);
+  }
+
+  destroy(sid, callback) {
+    this.pool.query("DELETE FROM app_sessions WHERE sid = $1", [sid])
+      .then(function () { callback(null); })
+      .catch(callback);
+  }
+}
+
 app.set("trust proxy", 1);
 app.disable("x-powered-by");
 app.use(express.json({ limit: "20kb" }));
+app.use(function waitForDatabase(req, res, next) {
+  databaseReady.then(function () { next(); }).catch(next);
+});
 app.use(
   session({
     secret: sessionSecret || "development-only-secret-change-me",
+    store: usePostgres ? new PostgresSessionStore(postgresPool) : undefined,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -45,14 +106,7 @@ app.get("/healthz", function (req, res) {
   res.status(200).json({ status: "ok" });
 });
 
-const usePostgres = Boolean(process.env.DATABASE_URL);
 const sqliteDb = usePostgres ? null : new Database(process.env.DB_PATH || "studydesk.db");
-const postgresPool = usePostgres ? new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_SSL === "false" ? false : { rejectUnauthorized: false },
-  max: 5,
-  idleTimeoutMillis: 30000
-}) : null;
 const transactionContext = new AsyncLocalStorage();
 
 function convertSqlForPostgres(sql) {
@@ -134,6 +188,10 @@ async function initializePostgresSchema() {
       id BIGSERIAL PRIMARY KEY, username TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL,
       email TEXT UNIQUE, date_of_birth TEXT
     );
+    CREATE TABLE IF NOT EXISTS app_sessions (
+      sid TEXT PRIMARY KEY, sess JSONB NOT NULL, expire TIMESTAMPTZ NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS app_sessions_expire_idx ON app_sessions(expire);
     CREATE TABLE IF NOT EXISTS tasks (
       id BIGSERIAL PRIMARY KEY, text TEXT NOT NULL, done INTEGER NOT NULL DEFAULT 0,
       user_id BIGINT, priority TEXT NOT NULL DEFAULT 'Normal', due_date TEXT NOT NULL DEFAULT '',
@@ -408,7 +466,7 @@ db.prepare("UPDATE notes SET created_at = CURRENT_TIMESTAMP WHERE created_at = '
 db.prepare("UPDATE notes SET updated_at = created_at WHERE updated_at = ''").run();
 }
 
-const databaseReady = usePostgres ? initializePostgresSchema() : Promise.resolve();
+databaseReady = usePostgres ? initializePostgresSchema() : Promise.resolve();
 
 // ---------- Login guard ----------
 function requireLogin(req, res, next) {
@@ -1786,13 +1844,16 @@ app.put("/api/budgets/:category", async function (req, res) {
   res.json({ message: "Saved" });
 });
 
-// ---------- Server start ----------
-databaseReady.then(function () {
-  app.listen(PORT, "0.0.0.0", function () {
-    console.log("Server running on port " + PORT);
+// ---------- Server start / Vercel entry ----------
+module.exports = app;
+if (!process.env.VERCEL) {
+  databaseReady.then(function () {
+    app.listen(PORT, "0.0.0.0", function () {
+      console.log("Server running on port " + PORT);
+    });
+  }).catch(function (error) {
+    console.error("Database setup failed:", error.message);
+    if (postgresPool) postgresPool.end();
+    process.exitCode = 1;
   });
-}).catch(function (error) {
-  console.error("Database setup failed:", error.message);
-  if (postgresPool) postgresPool.end();
-  process.exitCode = 1;
-});
+}

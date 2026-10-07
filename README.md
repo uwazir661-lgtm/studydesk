@@ -60,6 +60,20 @@ Typical deployment commands:
 - Install: `npm install`
 - Start: `npm start`
 
+### Vercel
+
+The Express server is exported from `server.js` for Vercel's Node.js runtime, while local development still uses `npm start`. Vercel serves files in `public/` as static assets. Because serverless storage is temporary, Vercel deployments require PostgreSQL rather than the local SQLite file.
+
+Connect this repository to Vercel using the `codex/prepare-studydesk-deploy` branch, then add these environment variables for Production (and Preview if you want preview builds to work):
+
+- `NODE_ENV=production`
+- `SESSION_SECRET` — a long random value; generate a separate secret for the hosted app
+- `DATABASE_URL` — the PostgreSQL connection string from Neon or another PostgreSQL provider
+- `DATABASE_SSL=true`
+- `OPENAI_API_ENABLED=false` (enable only after adding a valid `OPENAI_API_KEY`)
+
+The app stores login sessions in PostgreSQL on Vercel. Its schema is created automatically on the first request. Local SQLite data is not copied to the hosted database.
+
 ## Data and privacy
 
 Passwords are stored as bcrypt hashes. API routes require a signed-in session and user records are kept separate. Study data is sent to the OpenAI API only when a user sends a message to the AI helper and AI mode is enabled. Weather lookup uses the third-party Open-Meteo service.
