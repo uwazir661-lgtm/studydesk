@@ -9,7 +9,7 @@
 <body>
   <header>
     <h1>StudyDesk</h1>
-    <p class="tagline">Tumhara student life manager</p>
+    <p class="tagline">Your student life manager</p>
     <div id="userBar" style="display:none">
       <span id="whoami"></span>
       <button id="logoutBtn">Logout</button>
@@ -18,9 +18,9 @@
 
   <!-- Login / Register -->
   <div id="authBox">
-    <h2>Login ya Register</h2>
+    <h2>Login or Register</h2>
     <input type="text" id="authUser" placeholder="Username">
-    <input type="password" id="authPass" placeholder="Password (kam az kam 6 harf)">
+    <input type="password" id="authPass" placeholder="Password (at least 6 characters)">
     <div class="add-row">
       <button id="loginBtn">Login</button>
       <button id="registerBtn" class="secondary">Register</button>
@@ -28,12 +28,16 @@
     <p id="authError" class="error"></p>
   </div>
 
-  <!-- Poori app (login ke baad nazar aayegi) -->
+  <!-- Main app (visible after login) -->
   <div id="app" style="display:none">
     <nav>
       <button class="tab active" data-section="tasks">Tasks</button>
+      <button class="tab" data-section="assignments">Assignments</button>
+      <button class="tab" data-section="pomodoro">Pomodoro</button>
       <button class="tab" data-section="expenses">Expenses</button>
+      <button class="tab" data-section="budget">Budget</button>
       <button class="tab" data-section="notes">Notes</button>
+      <button class="tab" data-section="weather">Weather</button>
     </nav>
 
     <main>
@@ -41,10 +45,52 @@
       <section id="tasks" class="section active">
         <h2>Tasks</h2>
         <div class="add-row">
-          <input type="text" id="taskInput" placeholder="Naya task likho">
+          <input type="text" id="taskInput" placeholder="Add a new task">
           <button id="addBtn">Add</button>
         </div>
         <ul id="taskList"></ul>
+      </section>
+
+      <!-- Assignments -->
+      <section id="assignments" class="section">
+        <h2>Assignments</h2>
+
+        <div class="add-row">
+          <input type="text" id="asgSubject" placeholder="Subject (e.g. Database)">
+          <input type="text" id="asgTitle" placeholder="Assignment title">
+          <input type="date" id="asgDue">
+          <button id="asgAddBtn">Add</button>
+        </div>
+
+        <div id="asgList"></div>
+      </section>
+
+      <!-- Pomodoro -->
+      <section id="pomodoro" class="section">
+        <h2>Pomodoro Timer</h2>
+
+        <div class="pomo-card">
+          <div class="pomo-modes">
+            <button class="pomo-mode active" data-mode="focus">Focus</button>
+            <button class="pomo-mode" data-mode="short">Short break</button>
+            <button class="pomo-mode" data-mode="long">Long break</button>
+          </div>
+
+          <div id="pomoTime" class="pomo-time">25:00</div>
+
+          <div class="pomo-bar">
+            <div id="pomoBarFill" class="pomo-bar-fill"></div>
+          </div>
+
+          <p id="pomoMessage" class="pomo-message">Ready to focus?</p>
+
+          <div class="pomo-actions">
+            <button id="pomoStart">Start</button>
+            <button id="pomoReset" class="secondary">Reset</button>
+          </div>
+
+          <p class="pomo-count">Focus sessions today: <span id="pomoCount">0</span></p>
+        </div>
       </section>
 
       <!-- Expenses -->
@@ -52,8 +98,8 @@
         <h2>Expenses</h2>
 
         <div class="add-row">
-          <input type="text" id="expTitle" placeholder="Kis cheez par kharcha?">
-          <input type="number" id="expAmount" placeholder="Raqam" min="0">
+          <input type="text" id="expTitle" placeholder="What did you spend on?">
+          <input type="number" id="expAmount" placeholder="Amount" min="0">
           <select id="expCategory">
             <option>Food</option>
             <option>Transport</option>
@@ -67,26 +113,50 @@
         <ul id="expList"></ul>
       </section>
 
+      <!-- Budget -->
+      <section id="budget" class="section">
+        <h2>Monthly Budget</h2>
+
+        <div id="budgetSummary" class="budget-summary"></div>
+        <div id="budgetList"></div>
+      </section>
+
       <!-- Notes -->
       <section id="notes" class="section">
         <h2>Notes</h2>
 
         <div class="note-form">
-          <input type="text" id="noteTitle" placeholder="Note ka title">
-          <textarea id="noteContent" placeholder="Note likho..." rows="4"></textarea>
+          <input type="text" id="noteTitle" placeholder="Note title">
+          <textarea id="noteContent" placeholder="Write your note..." rows="4"></textarea>
           <div class="add-row">
             <button id="noteSaveBtn">Save</button>
             <button id="noteCancelBtn" style="display:none">Cancel</button>
           </div>
         </div>
 
-        <input type="text" id="noteSearch" class="search-box" placeholder="Notes mein search karo...">
+        <input type="text" id="noteSearch" class="search-box" placeholder="Search notes...">
         <div id="noteList"></div>
+      </section>
+
+      <!-- Weather -->
+      <section id="weather" class="section">
+        <h2>Weather</h2>
+
+        <div class="add-row">
+          <input type="text" id="cityInput" placeholder="City name (e.g. Lahore)">
+          <button id="weatherBtn">Search</button>
+        </div>
+
+        <div id="weatherResult"></div>
       </section>
     </main>
   </div>
 
   <script src="script.js"></script>
   <script src="auth.js"></script>
+  <script src="weather.js"></script>
+  <script src="assignments.js"></script>
+  <script src="pomodoro.js"></script>
+  <script src="budget.js"></script>
 </body>
 </html>

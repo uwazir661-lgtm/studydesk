@@ -15,12 +15,13 @@ function showApp(username) {
   authBox.style.display = "none";
   appBox.style.display = "block";
   userBar.style.display = "block";
-  whoami.textContent = "Salam, " + username + "  ";
+  whoami.textContent = "Welcome, " + username + "  ";
 
   // Is user ka apna data load karo
   loadTasks();
   loadExpenses();
   loadNotes();
+  loadAssignments();
 }
 
 // Login page dikhao

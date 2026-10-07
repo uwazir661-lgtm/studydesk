@@ -437,3 +437,366 @@ textarea:focus {
     min-width: 100%;
   }
 }
+/* ---------- Weather ---------- */
+.weather-card {
+  background: linear-gradient(135deg, #1e3a8a, #6d28d9);
+  color: white;
+  text-align: center;
+  padding: 28px 20px;
+  border-radius: 28px;
+  box-shadow: 0 10px 30px rgba(109, 40, 217, 0.4);
+}
+
+.weather-city {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.weather-icon {
+  font-size: 64px;
+  margin: 8px 0 0;
+}
+
+.weather-temp {
+  font-size: 52px;
+  font-weight: 700;
+}
+
+.weather-desc {
+  font-size: 16px;
+  opacity: 0.9;
+  margin-bottom: 18px;
+}
+
+.weather-grid {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.weather-box {
+  flex: 1;
+  min-width: 100px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 12px 8px;
+  border-radius: 18px;
+}
+
+.weather-label {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.weather-value {
+  font-size: 17px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+/* ---------- Assignments ---------- */
+nav {
+  overflow-x: auto;
+}
+
+.asg-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+  transition: 0.2s;
+}
+
+.asg-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.asg-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.asg-subject {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 14px;
+  border-radius: 999px;
+}
+
+.asg-del {
+  border: none;
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.asg-del:hover {
+  background: var(--danger);
+  color: #1a1a1a;
+}
+
+.asg-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.asg-due {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.due-late {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.due-soon {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.due-done {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.asg-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.asg-controls input {
+  flex: 1;
+  min-width: 140px;
+}
+
+.empty-text {
+  text-align: center;
+  color: var(--muted);
+  padding: 20px;
+}
+/* ---------- Pomodoro ---------- */
+.pomo-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 28px 22px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.pomo-modes {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.pomo-mode {
+  border: none;
+  background: var(--card-2);
+  color: var(--muted);
+  padding: 9px 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.pomo-mode:hover {
+  color: white;
+}
+
+.pomo-mode.active {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+}
+
+.pomo-time {
+  font-size: 72px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pomo-bar {
+  height: 10px;
+  background: var(--card-2);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 14px auto 12px;
+  max-width: 420px;
+}
+
+.pomo-bar-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  transition: width 0.3s linear;
+}
+
+.pomo-message {
+  color: var(--muted);
+  margin: 0 0 18px;
+  min-height: 22px;
+}
+
+.pomo-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.pomo-actions button {
+  padding: 12px 32px;
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 15px;
+  color: white;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+  transition: 0.2s;
+}
+
+.pomo-actions button.secondary {
+  background: var(--card-2);
+  color: var(--text);
+  box-shadow: none;
+}
+
+.pomo-actions button:hover {
+  transform: translateY(-2px);
+}
+
+.pomo-count {
+  margin: 0;
+  color: var(--muted);
+}
+
+.pomo-count span {
+  color: var(--success);
+  font-weight: 700;
+  font-size: 18px;
+}
+
+@media (max-width: 520px) {
+  .pomo-time {
+    font-size: 56px;
+  }
+}
+/* ---------- Budget ---------- */
+.budget-summary {
+  background: linear-gradient(135deg, #059669, #0891b2);
+  color: white;
+  padding: 16px 22px;
+  border-radius: var(--radius);
+  box-shadow: 0 6px 22px rgba(6, 182, 212, 0.3);
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+
+.budget-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+}
+
+.budget-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.budget-name {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.budget-nums {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.budget-bar {
+  height: 12px;
+  background: var(--card-2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.budget-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.budget-fill.ok {
+  background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.budget-fill.warn {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.budget-fill.over {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.budget-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 8px 0 12px;
+}
+
+.over-text {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.budget-row {
+  display: flex;
+  gap: 10px;
+}
+
+.budget-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.budget-row button {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 999px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
+  transition: 0.2s;
+}
+
+.budget-row button:hover {
+  transform: translateY(-2px);
+}

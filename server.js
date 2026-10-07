@@ -4,19 +4,26 @@ const bcrypt = require("bcryptjs");
 const Database = require("better-sqlite3");
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
+app.set("trust proxy", 1);
 app.use(express.json());
 app.use(
   session({
-    secret: "studydesk-secret-key-badal-dena",
+    secret: process.env.SESSION_SECRET || "dev-only-secret-change-me",
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24 * 7
+    }
   })
 );
 app.use(express.static("public"));
 
-const db = new Database("studydesk.db");
+const db = new Database(process.env.DB_PATH || "studydesk.db");
 
 // ---------- Tables ----------
 db.exec(`
@@ -53,7 +60,7 @@ db.exec(`
   )
 `);
 
-// Purane tables mein user_id ka column jodo (agar pehle se nahi hai)
+// Add the user_id column to older tables (if it is missing)
 function addColumnIfMissing(table, column, definition) {
   const cols = db.prepare("PRAGMA table_info(" + table + ")").all();
   const exists = cols.some(function (c) {
@@ -68,10 +75,10 @@ addColumnIfMissing("tasks", "user_id", "INTEGER");
 addColumnIfMissing("expenses", "user_id", "INTEGER");
 addColumnIfMissing("notes", "user_id", "INTEGER");
 
-// ---------- Login ka pehra ----------
+// ---------- Login guard ----------
 function requireLogin(req, res, next) {
   if (!req.session.userId) {
-    return res.status(401).json({ error: "Pehle login karo" });
+    return res.status(401).json({ error: "Please log in first" });
   }
   next();
 }
@@ -86,10 +93,10 @@ app.post("/api/register", function (req, res) {
   const password = req.body.password || "";
 
   if (username.length < 3) {
-    return res.status(400).json({ error: "Username kam az kam 3 harf ka ho" });
+    return res.status(400).json({ error: "Username must be at least 3 characters" });
   }
   if (password.length < 6) {
-    return res.status(400).json({ error: "Password kam az kam 6 harf ka ho" });
+    return res.status(400).json({ error: "Password must be at least 6 characters" });
   }
 
   const exists = db
@@ -97,7 +104,7 @@ app.post("/api/register", function (req, res) {
     .get(username);
 
   if (exists) {
-    return res.status(400).json({ error: "Ye username pehle se maujood hai" });
+    return res.status(400).json({ error: "This username is already taken" });
   }
 
   const hash = bcrypt.hashSync(password, 10);
@@ -119,7 +126,7 @@ app.post("/api/login", function (req, res) {
     .get(username);
 
   if (!user || !bcrypt.compareSync(password, user.password_hash)) {
-    return res.status(401).json({ error: "Username ya password ghalat hai" });
+    return res.status(401).json({ error: "Wrong username or password" });
   }
 
   req.session.userId = user.id;
@@ -129,7 +136,7 @@ app.post("/api/login", function (req, res) {
 
 app.post("/api/logout", function (req, res) {
   req.session.destroy(function () {
-    res.json({ message: "Logout ho gaya" });
+    res.json({ message: "Logged out" });
   });
 });
 
@@ -152,7 +159,7 @@ app.post("/api/tasks", function (req, res) {
   const text = (req.body.text || "").trim();
 
   if (text === "") {
-    return res.status(400).json({ error: "Task ka text zaroori hai" });
+    return res.status(400).json({ error: "Task text is required" });
   }
 
   const info = db
@@ -167,10 +174,10 @@ app.put("/api/tasks/:id", function (req, res) {
     .run(req.params.id, req.session.userId);
 
   if (info.changes === 0) {
-    return res.status(404).json({ error: "Task nahi mila" });
+    return res.status(404).json({ error: "Task not found" });
   }
 
-  res.json({ message: "Update ho gaya" });
+  res.json({ message: "Updated" });
 });
 
 app.delete("/api/tasks/:id", function (req, res) {
@@ -178,7 +185,7 @@ app.delete("/api/tasks/:id", function (req, res) {
     req.params.id,
     req.session.userId
   );
-  res.json({ message: "Delete ho gaya" });
+  res.json({ message: "Deleted" });
 });
 
 // ---------- Expenses ----------
@@ -195,7 +202,7 @@ app.post("/api/expenses", function (req, res) {
   const category = (req.body.category || "Other").trim();
 
   if (title === "" || !(amount > 0)) {
-    return res.status(400).json({ error: "Naam aur sahi raqam zaroori hai" });
+    return res.status(400).json({ error: "Title and a valid amount are required" });
   }
 
   const info = db
@@ -212,7 +219,7 @@ app.delete("/api/expenses/:id", function (req, res) {
     req.params.id,
     req.session.userId
   );
-  res.json({ message: "Delete ho gaya" });
+  res.json({ message: "Deleted" });
 });
 
 // ---------- Notes ----------
@@ -228,7 +235,7 @@ app.post("/api/notes", function (req, res) {
   const content = (req.body.content || "").trim();
 
   if (title === "") {
-    return res.status(400).json({ error: "Title zaroori hai" });
+    return res.status(400).json({ error: "Title is required" });
   }
 
   const info = db
@@ -243,7 +250,7 @@ app.put("/api/notes/:id", function (req, res) {
   const content = (req.body.content || "").trim();
 
   if (title === "") {
-    return res.status(400).json({ error: "Title zaroori hai" });
+    return res.status(400).json({ error: "Title is required" });
   }
 
   const info = db
@@ -253,10 +260,10 @@ app.put("/api/notes/:id", function (req, res) {
     .run(title, content, req.params.id, req.session.userId);
 
   if (info.changes === 0) {
-    return res.status(404).json({ error: "Note nahi mila" });
+    return res.status(404).json({ error: "Note not found" });
   }
 
-  res.json({ message: "Update ho gaya" });
+  res.json({ message: "Updated" });
 });
 
 app.delete("/api/notes/:id", function (req, res) {
@@ -264,10 +271,161 @@ app.delete("/api/notes/:id", function (req, res) {
     req.params.id,
     req.session.userId
   );
-  res.json({ message: "Delete ho gaya" });
+  res.json({ message: "Deleted" });
+});
+
+// ---------- Assignments ----------
+db.exec(`
+  CREATE TABLE IF NOT EXISTS assignments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    subject TEXT NOT NULL,
+    title TEXT NOT NULL,
+    due_date TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'Not started',
+    marks TEXT NOT NULL DEFAULT ''
+  )
+`);
+
+const allowedStatus = ["Not started", "In progress", "Submitted"];
+
+app.use("/api/assignments", requireLogin);
+
+app.get("/api/assignments", function (req, res) {
+  const items = db
+    .prepare(
+      `SELECT * FROM assignments
+       WHERE user_id = ?
+       ORDER BY CASE WHEN due_date = '' THEN 1 ELSE 0 END, due_date ASC, id DESC`
+    )
+    .all(req.session.userId);
+  res.json(items);
+});
+
+app.post("/api/assignments", function (req, res) {
+  const subject = (req.body.subject || "").trim();
+  const title = (req.body.title || "").trim();
+  const dueDate = (req.body.due_date || "").trim();
+
+  if (subject === "" || title === "") {
+    return res.status(400).json({ error: "Subject and title are required" });
+  }
+
+  const info = db
+    .prepare(
+      "INSERT INTO assignments (user_id, subject, title, due_date) VALUES (?, ?, ?, ?)"
+    )
+    .run(req.session.userId, subject, title, dueDate);
+
+  res.status(201).json({ id: info.lastInsertRowid });
+});
+
+app.put("/api/assignments/:id", function (req, res) {
+  const status = req.body.status;
+  const marks = (req.body.marks || "").toString().trim();
+
+  if (!allowedStatus.includes(status)) {
+    return res.status(400).json({ error: "Invalid status" });
+  }
+
+  const info = db
+    .prepare(
+      "UPDATE assignments SET status = ?, marks = ? WHERE id = ? AND user_id = ?"
+    )
+    .run(status, marks, req.params.id, req.session.userId);
+
+  if (info.changes === 0) {
+    return res.status(404).json({ error: "Assignment not found" });
+  }
+
+  res.json({ message: "Updated" });
+});
+
+app.delete("/api/assignments/:id", function (req, res) {
+  db.prepare("DELETE FROM assignments WHERE id = ? AND user_id = ?").run(
+    req.params.id,
+    req.session.userId
+  );
+  res.json({ message: "Deleted" });
+});
+
+// ---------- Budgets ----------
+db.exec(`
+  CREATE TABLE IF NOT EXISTS budgets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    category TEXT NOT NULL,
+    amount REAL NOT NULL,
+    UNIQUE(user_id, category)
+  )
+`);
+
+const budgetCategories = ["Food", "Transport", "Study", "Other"];
+
+app.use("/api/budgets", requireLogin);
+
+// Budget and this month's spending for every category
+app.get("/api/budgets", function (req, res) {
+  const budgets = db
+    .prepare("SELECT category, amount FROM budgets WHERE user_id = ?")
+    .all(req.session.userId);
+
+  const spent = db
+    .prepare(
+      `SELECT category, SUM(amount) AS total
+       FROM expenses
+       WHERE user_id = ?
+         AND strftime('%Y-%m', created_at) = strftime('%Y-%m', 'now')
+       GROUP BY category`
+    )
+    .all(req.session.userId);
+
+  const result = budgetCategories.map(function (cat) {
+    const b = budgets.find(function (x) {
+      return x.category === cat;
+    });
+    const s = spent.find(function (x) {
+      return x.category === cat;
+    });
+
+    return {
+      category: cat,
+      budget: b ? b.amount : 0,
+      spent: s ? s.total : 0
+    };
+  });
+
+  res.json(result);
+});
+
+// Set a category budget (0 removes it)
+app.put("/api/budgets/:category", function (req, res) {
+  const category = req.params.category;
+  const amount = Number(req.body.amount);
+
+  if (!budgetCategories.includes(category)) {
+    return res.status(400).json({ error: "Invalid category" });
+  }
+  if (!(amount >= 0)) {
+    return res.status(400).json({ error: "Please enter a valid amount" });
+  }
+
+  if (amount === 0) {
+    db.prepare("DELETE FROM budgets WHERE user_id = ? AND category = ?").run(
+      req.session.userId,
+      category
+    );
+  } else {
+    db.prepare(
+      `INSERT INTO budgets (user_id, category, amount) VALUES (?, ?, ?)
+       ON CONFLICT(user_id, category) DO UPDATE SET amount = excluded.amount`
+    ).run(req.session.userId, category, amount);
+  }
+
+  res.json({ message: "Saved" });
 });
 
 // ---------- Server start ----------
 app.listen(PORT, function () {
-  console.log("Server chal raha hai: http://localhost:" + PORT);
+  console.log("Server running at http://localhost:" + PORT);
 });
