@@ -4,7 +4,7 @@ const budgetList = document.getElementById("budgetList");
 const budgetTab = document.querySelector('.tab[data-section="budget"]');
 
 async function saveBudget(category, amount) {
-  const res = await fetch("/api/budgets/" + encodeURIComponent(category), {
+  const res = await apiFetch("/api/budgets/" + encodeURIComponent(category), {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ amount: amount === "" ? 0 : amount })
@@ -20,7 +20,7 @@ async function saveBudget(category, amount) {
 }
 
 async function loadBudgets() {
-  const res = await fetch("/api/budgets");
+  const res = await apiFetch("/api/budgets");
   if (!res.ok) {
     return;
   }

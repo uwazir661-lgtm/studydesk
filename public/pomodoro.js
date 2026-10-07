@@ -7,8 +7,26 @@ const pomoReset = document.getElementById("pomoReset");
 const pomoCount = document.getElementById("pomoCount");
 const pomoModeBtns = document.querySelectorAll(".pomo-mode");
 
-// Har mode ke minute (test ke liye focus ko 0.1 kar sakte ho)
-const POMO_MINUTES = { focus: 25, short: 5, long: 15 };
+// Durations are saved on this device so the timer can be personalized.
+const POMO_SETTINGS_KEY = "studydesk-pomo-settings";
+function readPomoSettings() {
+  const defaults = { focus: 25, short: 5, long: 15 };
+  try {
+    const saved = JSON.parse(localStorage.getItem(POMO_SETTINGS_KEY));
+    return {
+      focus: Number.isInteger(saved.focus) && saved.focus >= 5 && saved.focus <= 120 ? saved.focus : defaults.focus,
+      short: Number.isInteger(saved.short) && saved.short >= 1 && saved.short <= 30 ? saved.short : defaults.short,
+      long: Number.isInteger(saved.long) && saved.long >= 5 && saved.long <= 60 ? saved.long : defaults.long
+    };
+  } catch (e) {
+    return defaults;
+  }
+}
+let POMO_MINUTES = readPomoSettings();
+const pomoFocusMinutes = document.getElementById("pomoFocusMinutes");
+const pomoShortMinutes = document.getElementById("pomoShortMinutes");
+const pomoLongMinutes = document.getElementById("pomoLongMinutes");
+const pomoSaveSettings = document.getElementById("pomoSaveSettings");
 
 let pomoMode = "focus";
 let pomoTotal = POMO_MINUTES.focus * 60; // kul seconds
@@ -16,6 +34,10 @@ let pomoRemaining = pomoTotal;           // baqi seconds
 let pomoEnd = 0;                         // khatam hone ka waqt
 let pomoTimer = null;                    // chalta hua timer
 let audioCtx = null;                     // beep ke liye
+
+pomoFocusMinutes.value = POMO_MINUTES.focus;
+pomoShortMinutes.value = POMO_MINUTES.short;
+pomoLongMinutes.value = POMO_MINUTES.long;
 
 // Aaj ki date (jaise 2026-10-07), count isi ke naam se save hoga
 function todayKey() {
@@ -104,6 +126,15 @@ function finishTimer() {
     const count = getTodayCount() + 1;
     saveTodayCount(count);
     pomoCount.textContent = count;
+    apiFetch("/api/analytics/focus", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ minutes: POMO_MINUTES.focus })
+    }).then(function (response) {
+      if (!response.ok) throw new Error("Focus session save nahi hua.");
+      if (typeof loadAnalytics === "function") loadAnalytics();
+    }).catch(function () {});
+    loadDashboard();
 
     // Har 4th session ke baad lamba break
     setMode(count % 4 === 0 ? "long" : "short");
@@ -160,6 +191,25 @@ pomoModeBtns.forEach(function (btn) {
   btn.addEventListener("click", function () {
     setMode(btn.dataset.mode);
   });
+});
+
+pomoSaveSettings.addEventListener("click", function () {
+  const focus = Number(pomoFocusMinutes.value);
+  const short = Number(pomoShortMinutes.value);
+  const long = Number(pomoLongMinutes.value);
+  if (!Number.isInteger(focus) || focus < 5 || focus > 120 ||
+      !Number.isInteger(short) || short < 1 || short > 30 ||
+      !Number.isInteger(long) || long < 5 || long > 60) {
+    alert("Set focus to 5–120 minutes, short break to 1–30, and long break to 5–60.");
+    return;
+  }
+
+  POMO_MINUTES = { focus: focus, short: short, long: long };
+  try {
+    localStorage.setItem(POMO_SETTINGS_KEY, JSON.stringify(POMO_MINUTES));
+  } catch (e) {}
+  setMode(pomoMode);
+  pomoMessage.textContent = "Timer settings saved.";
 });
 
 // Page khulte hi

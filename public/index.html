@@ -3,13 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#6d28d9">
+  <meta name="description" content="StudyDesk keeps your study plans, tasks, notes, and deadlines in one calm workspace.">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/studydesk-192.png">
+  <link rel="apple-touch-icon" href="/icons/studydesk-192.png">
   <title>StudyDesk</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="auth-screen">
   <header>
     <h1>StudyDesk</h1>
     <p class="tagline">Your student life manager</p>
+    <button id="themeToggle" class="theme-toggle" type="button" aria-label="Switch to light theme" aria-pressed="false">
+      <span aria-hidden="true">☀</span> Light theme
+    </button>
+    <button id="installAppBtn" class="install-app-btn" type="button" hidden>⬇ Install app</button>
     <div id="userBar" style="display:none">
       <span id="whoami"></span>
       <button id="logoutBtn">Logout</button>
@@ -18,35 +27,327 @@
 
   <!-- Login / Register -->
   <div id="authBox">
-    <h2>Login or Register</h2>
-    <input type="text" id="authUser" placeholder="Username">
-    <input type="password" id="authPass" placeholder="Password (at least 6 characters)">
-    <div class="add-row">
-      <button id="loginBtn">Login</button>
-      <button id="registerBtn" class="secondary">Register</button>
+    <div class="auth-card">
+      <div class="auth-card-brand"><span aria-hidden="true">✦</span> StudyDesk</div>
+      <p class="auth-eyebrow">YOUR PERSONAL STUDY SPACE</p>
+      <h2 id="authTitle">Welcome back!</h2>
+      <p id="authSubtitle" class="auth-subtitle">Sign in to keep your study life on track.</p>
+      <label class="auth-field"><span id="authUserLabel">Username</span>
+        <input type="text" id="authUser" placeholder="Enter your username" autocomplete="username" required>
+      </label>
+      <label class="auth-field">Password
+        <input type="password" id="authPass" placeholder="At least 6 characters" autocomplete="current-password" required>
+      </label>
+      <div id="authRegisterPanel" class="auth-register-panel" hidden>
+        <label class="auth-field">Email address
+          <input type="email" id="authEmail" placeholder="you@example.com" autocomplete="email">
+        </label>
+        <label class="auth-field">Date of birth
+          <input type="date" id="authDob" autocomplete="bday">
+        </label>
+        <label class="auth-field">Confirm password
+          <input type="password" id="authConfirmPass" placeholder="Enter password again" autocomplete="new-password">
+        </label>
+      </div>
+      <div class="add-row auth-actions">
+        <button id="loginBtn" type="button">Log in</button>
+        <button id="registerBtn" class="secondary" type="button">Create account</button>
+      </div>
+      <button id="authModeToggle" class="auth-mode-toggle" type="button">New to StudyDesk? Create an account</button>
+      <p id="authError" class="error" role="alert" aria-live="polite"></p>
+      <p class="auth-privacy">Your tasks, notes, and grades stay in your account.</p>
     </div>
-    <p id="authError" class="error"></p>
+    <aside class="auth-promo" aria-label="StudyDesk features">
+      <div class="auth-art" aria-hidden="true">
+        <div class="auth-orbit auth-orbit-one"></div>
+        <div class="auth-orbit auth-orbit-two"></div>
+        <div class="auth-book">✦</div>
+        <div class="auth-mini-card auth-mini-focus"><span>FOCUS SESSION</span><strong>25:00</strong><i></i></div>
+        <div class="auth-mini-card auth-mini-progress"><span>WEEKLY PROGRESS</span><strong>↗ Ready to grow</strong></div>
+      </div>
+      <div class="auth-promo-copy">
+        <p class="auth-eyebrow">MAKE EVERY STUDY SESSION COUNT</p>
+        <h2>A calmer way to reach your goals.</h2>
+        <p>Plan your classes, track assignments, and build a study routine that works for you.</p>
+      </div>
+      <div class="auth-promo-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+    </aside>
   </div>
 
   <!-- Main app (visible after login) -->
   <div id="app" style="display:none">
     <nav>
-      <button class="tab active" data-section="tasks">Tasks</button>
-      <button class="tab" data-section="assignments">Assignments</button>
-      <button class="tab" data-section="pomodoro">Pomodoro</button>
-      <button class="tab" data-section="expenses">Expenses</button>
-      <button class="tab" data-section="budget">Budget</button>
-      <button class="tab" data-section="notes">Notes</button>
-      <button class="tab" data-section="weather">Weather</button>
+      <button class="tab" data-section="agent">AI Agent</button>
+      <button class="tab active" data-section="dashboard">Dashboard</button>
+      <details class="nav-dropdown">
+        <summary>Study tools <span aria-hidden="true">⌄</span></summary>
+        <div class="nav-menu">
+          <button class="tab" data-section="syllabus">Syllabus tracker</button>
+          <button class="tab" data-section="flashcards">Flashcards</button>
+          <button class="tab" data-section="quizzes">Practice quizzes</button>
+          <button class="tab" data-section="grades">Grade tracker</button>
+          <button class="tab" data-section="analytics">Study analytics</button>
+        </div>
+      </details>
+      <details class="nav-dropdown">
+        <summary>Planning <span aria-hidden="true">⌄</span></summary>
+        <div class="nav-menu">
+          <button class="tab" data-section="calendar">Calendar</button>
+          <button class="tab" data-section="exams">Exam countdown</button>
+          <button class="tab" data-section="studyplan">Study plan</button>
+          <button class="tab" data-section="tasks">Tasks</button>
+          <button class="tab" data-section="assignments">Assignments</button>
+          <button class="tab" data-section="reminders">Reminders</button>
+          <button class="tab" data-section="classes">Class timetable</button>
+        </div>
+      </details>
+      <details class="nav-dropdown">
+        <summary>More <span aria-hidden="true">⌄</span></summary>
+        <div class="nav-menu">
+          <button class="tab" data-section="pomodoro">Pomodoro</button>
+          <button class="tab" data-section="expenses">Expenses</button>
+          <button class="tab" data-section="budget">Budget</button>
+          <button class="tab" data-section="notes">Notes</button>
+          <button class="tab" data-section="weather">Weather</button>
+        </div>
+      </details>
     </nav>
 
+    <div id="offlineNotice" class="offline-notice" role="status" hidden>
+      Offline backup khul gaya hai. Tasks aur notes sirf dekh sakte ho; server dobara connect hone par edit karna. Backup isi browser mein save hai.
+    </div>
+    <div id="reminderAlert" class="reminder-alert" role="alert" hidden>
+      <span id="reminderAlertText"></span>
+      <button id="reminderAlertClear" type="button" aria-label="Dismiss reminder alert">Dismiss</button>
+    </div>
+
     <main>
+      <!-- AI Study Agent -->
+      <section id="agent" class="section">
+        <div class="agent-heading">
+          <div>
+            <p class="dashboard-eyebrow">YOUR PERSONAL STUDY PARTNER</p>
+            <h2>StudyDesk AI</h2>
+            <p>Ask for a plan, get help with deadlines, or ask me to add a task.</p>
+          </div>
+          <span class="agent-status"><i></i> Ready to help</span>
+        </div>
+
+        <div class="agent-shell">
+          <div id="agentMessages" class="agent-messages" aria-live="polite">
+            <div class="agent-message assistant">
+              <span class="agent-avatar" aria-hidden="true">✦</span>
+              <div class="agent-bubble">Hi! I can help organize your study day, review deadlines, and add tasks or assignments when you ask. What would you like to work on?</div>
+            </div>
+          </div>
+          <div class="agent-prompts">
+            <button type="button" data-prompt="Help me make a study plan for today based on my assignments and tasks.">Plan my study day</button>
+            <button type="button" data-prompt="Which assignments should I work on first? Explain why.">Review my deadlines</button>
+            <button type="button" data-prompt="Add a high priority task called 'Review today's lecture notes' due tomorrow.">Add a study task</button>
+          </div>
+          <form id="agentForm" class="agent-composer">
+            <textarea id="agentInput" rows="2" maxlength="2000" placeholder="Ask your study agent..." aria-label="Message your study agent"></textarea>
+            <button id="agentSend" type="submit">Send</button>
+          </form>
+          <p class="agent-footnote">Your study data is only shared with the AI service when you send a message.</p>
+        </div>
+      </section>
+
+      <!-- Syllabus Tracker -->
+      <section id="syllabus" class="section">
+        <div class="syllabus-heading">
+          <div>
+            <p class="dashboard-eyebrow">TRACK YOUR REVISION</p>
+            <h2>Syllabus Tracker</h2>
+            <p class="syllabus-intro">Add chapters by subject and mark each one complete as you study.</p>
+          </div>
+        </div>
+        <form id="syllabusForm" class="syllabus-form">
+          <label>Subject<input id="syllabusSubject" type="text" maxlength="50" placeholder="e.g. Biology" required></label>
+          <label>Chapter<input id="syllabusChapter" type="text" maxlength="100" placeholder="e.g. Cell structure" required></label>
+          <button id="syllabusSave" type="submit">Add chapter</button>
+        </form>
+        <p id="syllabusStatus" class="syllabus-status" role="status" aria-live="polite"></p>
+        <div id="syllabusList" class="syllabus-list" aria-live="polite"></div>
+      </section>
+
+      <!-- Exam Countdown -->
+      <section id="exams" class="section">
+        <div class="exam-heading">
+          <div>
+            <p class="dashboard-eyebrow">STAY READY</p>
+            <h2>Exam Countdown</h2>
+            <p class="exam-intro">Add your exam dates and see how much time is left.</p>
+          </div>
+        </div>
+        <form id="examForm" class="exam-form">
+          <label>Exam name<input id="examTitle" type="text" maxlength="80" placeholder="e.g. Final Exam" required></label>
+          <label>Subject (optional)<input id="examSubject" type="text" maxlength="50" placeholder="e.g. Biology"></label>
+          <label>Exam date<input id="examDate" type="date" required></label>
+          <button id="examSave" type="submit">Add exam</button>
+        </form>
+        <p id="examStatus" class="exam-status" role="status" aria-live="polite"></p>
+        <div id="examList" class="exam-list" aria-live="polite"></div>
+      </section>
+
+      <!-- Study Calendar -->
+      <section id="calendar" class="section">
+        <div class="calendar-heading">
+          <div>
+            <p class="dashboard-eyebrow">YOUR DEADLINES</p>
+            <h2>Study Calendar</h2>
+          </div>
+          <div class="calendar-nav">
+            <button id="calendarPrev" type="button" aria-label="Previous month">‹</button>
+            <button id="calendarToday" type="button">Today</button>
+            <button id="calendarNext" type="button" aria-label="Next month">›</button>
+          </div>
+        </div>
+        <div class="calendar-month-row">
+          <h3 id="calendarMonth"></h3>
+          <div class="calendar-legend"><span><i class="task-dot"></i> Task</span><span><i class="assignment-dot"></i> Assignment</span></div>
+        </div>
+        <div id="calendarWeekdays" class="calendar-weekdays"></div>
+        <div id="calendarGrid" class="calendar-grid" aria-label="Study deadlines by date"></div>
+        <div class="calendar-agenda-panel">
+          <h3 id="calendarAgendaTitle">Select a day</h3>
+          <div id="calendarAgenda"></div>
+        </div>
+      </section>
+
+      <!-- Class Timetable -->
+      <section id="classes" class="section">
+        <div class="class-heading">
+          <div>
+            <p class="dashboard-eyebrow">YOUR WEEK AT A GLANCE</p>
+            <h2>Class Timetable</h2>
+            <p class="class-intro">Add your regular classes with their days, times, and room numbers.</p>
+          </div>
+        </div>
+        <form id="classForm" class="class-form">
+          <label>Subject<input id="classSubject" type="text" maxlength="60" placeholder="e.g. Computer Science" required></label>
+          <label>Day<select id="classDay" required>
+            <option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option>
+            <option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option><option value="0">Sunday</option>
+          </select></label>
+          <label>Start<input id="classStart" type="time" required></label>
+          <label>End<input id="classEnd" type="time" required></label>
+          <label>Room (optional)<input id="classRoom" type="text" maxlength="50" placeholder="e.g. Lab 2"></label>
+          <button id="classSave" type="submit">Add class</button>
+          <button id="classCancel" class="secondary" type="button" hidden>Cancel</button>
+        </form>
+        <p id="classStatus" class="class-status" role="status" aria-live="polite"></p>
+        <div id="classGrid" class="class-grid" aria-label="Weekly class timetable"></div>
+      </section>
+
+      <!-- Weekly Study Plan -->
+      <section id="studyplan" class="section">
+        <div class="study-plan-heading">
+          <div>
+            <p class="dashboard-eyebrow">BUILD A STEADY ROUTINE</p>
+            <h2>Weekly Study Plan</h2>
+            <p class="study-plan-intro">Add repeating study blocks for your week. Blocks cannot overlap on the same day.</p>
+          </div>
+        </div>
+        <form id="studyPlanForm" class="study-plan-form">
+          <label>Subject<input id="studyPlanSubject" type="text" maxlength="50" placeholder="e.g. Computer Science" required></label>
+          <label>Day<select id="studyPlanDay" required>
+            <option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option>
+            <option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option><option value="0">Sunday</option>
+          </select></label>
+          <label>Start<input id="studyPlanStart" type="time" required></label>
+          <label>End<input id="studyPlanEnd" type="time" required></label>
+          <label class="study-plan-goal-label">Study goal<input id="studyPlanGoal" type="text" maxlength="180" placeholder="e.g. Revise chapter 3"></label>
+          <button id="studyPlanSave" type="submit">Add study block</button>
+          <button id="studyPlanCancel" class="secondary" type="button" hidden>Cancel</button>
+        </form>
+        <p id="studyPlanStatus" class="study-plan-status" role="status" aria-live="polite"></p>
+        <div id="studyPlanGrid" class="study-plan-grid" aria-label="Weekly study schedule"></div>
+      </section>
+
+      <!-- Study Analytics -->
+      <section id="analytics" class="section">
+        <div class="analytics-heading">
+          <div>
+            <p class="dashboard-eyebrow">YOUR CONSISTENCY</p>
+            <h2>Study Analytics</h2>
+            <p class="analytics-intro">Focus time and completed tasks from the last seven days.</p>
+          </div>
+          <button id="analyticsRefresh" type="button">Refresh</button>
+        </div>
+        <div id="analyticsStats" class="analytics-stats" aria-live="polite"><p class="empty-text">Loading your study progress...</p></div>
+        <section class="analytics-chart-panel">
+          <h3>Last 7 days</h3>
+          <div id="analyticsChart" class="analytics-chart" aria-label="Daily study activity chart"></div>
+        </section>
+        <p id="analyticsStatus" class="analytics-status" role="status" aria-live="polite"></p>
+      </section>
+
       <!-- Tasks -->
-      <section id="tasks" class="section active">
+      <section id="dashboard" class="section active">
+        <div class="dashboard-heading">
+          <div>
+            <p class="dashboard-eyebrow">YOUR STUDY OVERVIEW</p>
+            <h2>Dashboard</h2>
+          </div>
+          <p id="dashboardDate" class="dashboard-date"></p>
+        </div>
+        <div id="dashboardStats" class="dashboard-grid" aria-live="polite">
+          <p class="empty-text">Loading your overview...</p>
+        </div>
+        <div class="dashboard-lower">
+          <div class="dashboard-panel">
+            <h3>Upcoming assignments</h3>
+            <div id="dashboardUpcoming" class="dashboard-upcoming"></div>
+          </div>
+          <div class="dashboard-panel">
+            <h3>Tasks due today</h3>
+            <div id="dashboardTodayTasks" class="dashboard-today-tasks"></div>
+          </div>
+          <div class="dashboard-panel dashboard-weather-panel">
+            <span class="dashboard-weather-icon" id="dashboardWeatherIcon" aria-hidden="true">☁</span>
+            <div class="dashboard-weather-copy">
+              <h3>Weather</h3>
+              <strong id="dashboardWeatherCity">Search a city</strong>
+              <span id="dashboardWeatherDetail">See local conditions at a glance.</span>
+              <small id="dashboardWeatherUpdated"></small>
+            </div>
+            <button class="dashboard-action" data-go="weather">Open Weather</button>
+          </div>
+          <div class="dashboard-panel dashboard-focus-panel">
+            <span class="dashboard-focus-icon" aria-hidden="true">⏱</span>
+            <h3>Ready for a focus session?</h3>
+            <p>Start a Pomodoro session and make progress on your study goals.</p>
+            <button class="dashboard-action" data-go="pomodoro">Open Pomodoro</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tasks -->
+      <section id="tasks" class="section">
         <h2>Tasks</h2>
         <div class="add-row">
           <input type="text" id="taskInput" placeholder="Add a new task">
+          <input type="text" id="taskSubject" placeholder="Subject / tag (e.g. CS)" maxlength="40" aria-label="Task subject or tag">
+          <select id="taskPriority" aria-label="Task priority">
+            <option value="High">High</option><option value="Normal" selected>Medium</option><option value="Low">Low</option>
+          </select>
+          <input type="date" id="taskDue" aria-label="Task due date">
+          <select id="taskRepeat" aria-label="Repeat task">
+            <option value="none">Does not repeat</option>
+            <option value="daily">Repeat daily</option>
+            <option value="weekly">Repeat weekly</option>
+          </select>
           <button id="addBtn">Add</button>
+          <button id="taskCancelBtn" class="secondary" style="display:none">Cancel</button>
+        </div>
+        <div class="task-tools">
+          <input type="search" id="taskSearch" placeholder="Search tasks...">
+          <select id="taskFilter" aria-label="Filter tasks">
+            <option value="all">All tasks</option>
+            <option value="open">Open</option>
+            <option value="done">Completed</option>
+          </select>
         </div>
         <ul id="taskList"></ul>
       </section>
@@ -60,8 +361,18 @@
           <input type="text" id="asgTitle" placeholder="Assignment title">
           <input type="date" id="asgDue">
           <button id="asgAddBtn">Add</button>
+          <button id="asgCancelBtn" class="secondary" style="display:none">Cancel</button>
         </div>
 
+        <div class="asg-tools">
+          <input type="search" id="asgSearch" placeholder="Search assignments...">
+          <select id="asgStatusFilter" aria-label="Filter assignments by status">
+            <option value="all">All statuses</option>
+            <option>Not started</option>
+            <option>In progress</option>
+            <option>Submitted</option>
+          </select>
+        </div>
         <div id="asgList"></div>
       </section>
 
@@ -90,6 +401,16 @@
           </div>
 
           <p class="pomo-count">Focus sessions today: <span id="pomoCount">0</span></p>
+
+          <details class="pomo-settings">
+            <summary>Timer settings</summary>
+            <div class="pomo-settings-grid">
+              <label>Focus minutes<input type="number" id="pomoFocusMinutes" min="5" max="120"></label>
+              <label>Short break<input type="number" id="pomoShortMinutes" min="1" max="30"></label>
+              <label>Long break<input type="number" id="pomoLongMinutes" min="5" max="60"></label>
+            </div>
+            <button id="pomoSaveSettings" class="pomo-save-settings">Save timer settings</button>
+          </details>
         </div>
       </section>
 
@@ -107,9 +428,30 @@
             <option>Other</option>
           </select>
           <button id="expAddBtn">Add</button>
+          <button id="expCancelBtn" class="secondary" style="display:none">Cancel</button>
         </div>
 
-        <h3>Total: Rs <span id="expTotal">0</span></h3>
+        <div class="expense-tools">
+          <input type="search" id="expSearch" placeholder="Search expenses...">
+          <select id="expFilter" aria-label="Filter expenses by category">
+            <option value="all">All categories</option>
+            <option>Food</option><option>Transport</option><option>Study</option><option>Other</option>
+          </select>
+        </div>
+        <div class="expense-highlights">
+          <div class="expense-highlight expense-month-highlight">
+            <span class="expense-highlight-icon" aria-hidden="true">↗</span>
+            <div><span class="expense-highlight-label" id="expMonthLabel">This month</span><strong>Rs <span id="expMonthTotal">0</span></strong></div>
+          </div>
+          <div class="expense-highlight">
+            <span class="expense-highlight-icon" aria-hidden="true">▤</span>
+            <div><span class="expense-highlight-label">Filtered total</span><strong>Rs <span id="expTotal">0</span></strong></div>
+          </div>
+        </div>
+        <section class="expense-chart-panel" aria-labelledby="expenseChartTitle">
+          <h3 id="expenseChartTitle">This month's spending by category</h3>
+          <div id="expenseChart" class="expense-chart" role="img" aria-label="Monthly expenses by category"></div>
+        </section>
         <ul id="expList"></ul>
       </section>
 
@@ -121,20 +463,135 @@
         <div id="budgetList"></div>
       </section>
 
+      <!-- Flashcards -->
+      <section id="flashcards" class="section">
+        <div class="flashcard-heading">
+          <div>
+            <p class="dashboard-eyebrow">REVISE AND REMEMBER</p>
+            <h2>Flashcards</h2>
+            <p class="flashcard-intro">Make cards from your notes or create question and answer cards yourself.</p>
+          </div>
+        </div>
+        <form id="flashcardForm" class="flashcard-form">
+          <label>Question<input id="flashcardQuestionInput" type="text" maxlength="200" placeholder="What do you want to remember?" required></label>
+          <label>Answer<textarea id="flashcardAnswerInput" maxlength="10000" rows="3" placeholder="Write the answer..." required></textarea></label>
+          <button id="flashcardSave" type="submit">Add flashcard</button>
+        </form>
+        <p id="flashcardStatus" class="flashcard-status" role="status" aria-live="polite"></p>
+        <section class="flashcard-review" aria-label="Flashcard review">
+          <div class="flashcard-review-top"><h3>Review deck</h3><span id="flashcardPosition">0 cards</span></div>
+          <div id="flashcardReviewCard" class="flashcard-review-card">
+            <p id="flashcardPrompt">Add a card to start reviewing.</p>
+            <p id="flashcardAnswer" hidden></p>
+          </div>
+          <div class="flashcard-review-actions">
+            <button id="flashcardReveal" type="button" disabled>Show answer</button>
+            <button id="flashcardNext" type="button" class="secondary" disabled>Next card</button>
+          </div>
+        </section>
+        <div id="flashcardDeck" class="flashcard-deck" aria-live="polite"></div>
+      </section>
+
+      <!-- Practice Quizzes -->
+      <section id="quizzes" class="section">
+        <div class="quiz-heading">
+          <div>
+            <p class="dashboard-eyebrow">PRACTICE AND IMPROVE</p>
+            <h2>Practice Quizzes</h2>
+            <p class="quiz-intro">Create a short multiple-choice test for any topic and track your scores.</p>
+          </div>
+        </div>
+        <details class="quiz-builder" open>
+          <summary>Create a quiz</summary>
+          <form id="quizCreateForm">
+            <label class="quiz-title-label">Topic or quiz name<input id="quizTitleInput" type="text" maxlength="80" placeholder="e.g. Biology: Cell Structure" required></label>
+            <div id="quizQuestionBuilder" class="quiz-question-builder"></div>
+            <div class="quiz-builder-actions">
+              <button id="quizAddQuestion" type="button" class="secondary">+ Add question</button>
+              <button id="quizSave" type="submit">Save quiz</button>
+            </div>
+          </form>
+        </details>
+        <p id="quizStatus" class="quiz-status" role="status" aria-live="polite"></p>
+        <section id="quizRunner" class="quiz-runner" hidden>
+          <div class="quiz-runner-heading"><h3 id="quizRunnerTitle"></h3><button id="quizCancelAttempt" class="secondary" type="button">Close quiz</button></div>
+          <form id="quizAttemptForm">
+            <div id="quizAttemptQuestions"></div>
+            <button id="quizSubmitAttempt" type="submit">Submit answers</button>
+          </form>
+        </section>
+        <div class="quiz-columns">
+          <section class="quiz-panel"><h3>My quizzes</h3><div id="quizList" class="quiz-list"></div></section>
+          <section class="quiz-panel"><h3>Score history</h3><div id="quizHistory" class="quiz-history"></div></section>
+        </div>
+      </section>
+
+      <!-- Reminders -->
+      <section id="reminders" class="section">
+        <div class="reminder-heading">
+          <div>
+            <p class="dashboard-eyebrow">DON'T MISS WHAT MATTERS</p>
+            <h2>Reminders</h2>
+            <p class="reminder-intro">Set alerts for assignments, classes, or study sessions. Keep StudyDesk open for reminders to arrive.</p>
+          </div>
+          <button id="reminderPermission" class="secondary" type="button">Enable browser notifications</button>
+        </div>
+        <p id="reminderPermissionStatus" class="reminder-permission-status" role="status"></p>
+        <form id="reminderForm" class="reminder-form">
+          <label>What to remember<input id="reminderTitle" type="text" maxlength="100" placeholder="e.g. Start chemistry revision" required></label>
+          <label>Type<select id="reminderKind" required><option>Assignment</option><option>Class</option><option>Study session</option></select></label>
+          <label>Date and time<input id="reminderAt" type="datetime-local" required></label>
+          <button id="reminderSave" type="submit">Add reminder</button>
+        </form>
+        <p id="reminderStatus" class="reminder-status" role="status" aria-live="polite"></p>
+        <div id="reminderList" class="reminder-list" aria-live="polite"></div>
+      </section>
+
+      <!-- Grade Tracker -->
+      <section id="grades" class="section">
+        <div class="grade-heading">
+          <div>
+            <p class="dashboard-eyebrow">SEE YOUR PROGRESS</p>
+            <h2>Grade Tracker</h2>
+            <p class="grade-intro">Add assessment marks to track subject averages against your target.</p>
+          </div>
+        </div>
+        <form id="gradeForm" class="grade-form">
+          <label>Subject<input id="gradeSubject" type="text" maxlength="50" placeholder="e.g. Chemistry" required></label>
+          <label>Assessment<input id="gradeAssessment" type="text" maxlength="100" placeholder="e.g. Quiz 1" required></label>
+          <label>Marks earned<input id="gradeScore" type="number" min="0" step="0.01" placeholder="18" required></label>
+          <label>Total marks<input id="gradeTotal" type="number" min="0.01" step="0.01" placeholder="20" required></label>
+          <label>Target %<input id="gradeTarget" type="number" min="0" max="100" step="0.1" value="80" required></label>
+          <button id="gradeSave" type="submit">Add marks</button>
+        </form>
+        <p id="gradeStatus" class="grade-status" role="status" aria-live="polite"></p>
+        <div class="grade-columns">
+          <section class="grade-panel"><h3>Subject progress</h3><div id="gradeSubjects" class="grade-subjects"></div></section>
+          <section class="grade-panel"><h3>Assessment history</h3><div id="gradeHistory" class="grade-history"></div></section>
+        </div>
+      </section>
+
       <!-- Notes -->
       <section id="notes" class="section">
         <h2>Notes</h2>
 
         <div class="note-form">
           <input type="text" id="noteTitle" placeholder="Note title">
-          <textarea id="noteContent" placeholder="Write your note..." rows="4"></textarea>
+          <textarea id="noteContent" placeholder="Write your note... Supports **bold**, *italic*, `code`, and line breaks." rows="5"></textarea>
+          <small class="note-help">Markdown: **bold**, *italic*, `code`. Line breaks are kept.</small>
           <div class="add-row">
-            <button id="noteSaveBtn">Save</button>
+            <button id="noteSaveBtn">Save note</button>
             <button id="noteCancelBtn" style="display:none">Cancel</button>
           </div>
         </div>
 
-        <input type="text" id="noteSearch" class="search-box" placeholder="Search notes...">
+        <div class="note-tools">
+          <input type="search" id="noteSearch" class="search-box" placeholder="Search notes...">
+          <select id="noteFilter" aria-label="Filter notes">
+            <option value="all">All notes</option>
+            <option value="pinned">Pinned only</option>
+          </select>
+        </div>
         <div id="noteList"></div>
       </section>
 
@@ -152,11 +609,28 @@
     </main>
   </div>
 
+  <script src="api.js"></script>
+  <script src="offline-cache.js"></script>
+  <script src="theme.js"></script>
   <script src="script.js"></script>
+  <script src="notes.js"></script>
+  <script src="studyplan.js"></script>
+  <script src="exams.js"></script>
+  <script src="syllabus.js"></script>
+  <script src="flashcards.js"></script>
+  <script src="quizzes.js"></script>
+  <script src="reminders.js"></script>
+  <script src="grades.js"></script>
+  <script src="classes.js"></script>
+  <script src="analytics.js"></script>
   <script src="auth.js"></script>
   <script src="weather.js"></script>
   <script src="assignments.js"></script>
   <script src="pomodoro.js"></script>
   <script src="budget.js"></script>
+  <script src="dashboard.js"></script>
+  <script src="agent.js"></script>
+  <script src="calendar.js"></script>
+  <script src="pwa.js"></script>
 </body>
 </html>
