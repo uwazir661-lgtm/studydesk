@@ -72,6 +72,13 @@ async function getWeather(city) {
     const c = wData.current;
 
     const info = describeWeather(c.weather_code);
+    const weatherSnapshot = {
+      city: place.name + (place.country ? ", " + place.country : ""),
+      icon: info[0],
+      temperature: Math.round(c.temperature_2m),
+      description: info[1],
+      savedAt: Date.now()
+    };
 
     // Build the card and show it on screen
     weatherResult.innerHTML = "";
@@ -111,7 +118,9 @@ async function getWeather(city) {
     // Remember the city so it shows up next time
     try {
       localStorage.setItem("studydesk-city", city);
+      localStorage.setItem("studydesk-weather-snapshot", JSON.stringify(weatherSnapshot));
     } catch (e) {}
+    window.dispatchEvent(new CustomEvent("studydesk-weather-updated", { detail: weatherSnapshot }));
   } catch (err) {
     weatherResult.textContent = "Could not load the weather. Check your internet.";
   }

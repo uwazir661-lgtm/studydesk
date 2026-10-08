@@ -1,17 +1,24 @@
 {
   "name": "studydesk",
   "version": "1.0.0",
-  "description": "",
+  "description": "A personal study organizer with tasks, assignments, notes, expenses, calendar, and an optional AI study helper.",
   "main": "server.js",
+  "engines": {
+    "node": ">=20.12.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/uwazir661-lgtm/studydesk.git"
   },
-  "keywords": [],
+  "keywords": [
+    "study-planner",
+    "student-dashboard",
+    "pomodoro",
+    "sqlite"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
@@ -23,6 +30,7 @@
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^13.0.3",
     "express": "^5.2.1",
-    "express-session": "^1.19.0"
+    "express-session": "^1.19.0",
+    "pg": "^8.23.1"
   }
 }
