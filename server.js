@@ -102,6 +102,11 @@ app.use(
   })
 );
 app.use(express.static("public"));
+// Vercel serves files in public/ from its CDN, so redirect the app root to the
+// static entry page when Express receives `/` in its serverless function.
+app.get("/", function (req, res) {
+  res.redirect(302, "/index.html");
+});
 app.get("/healthz", function (req, res) {
   res.status(200).json({ status: "ok" });
 });
